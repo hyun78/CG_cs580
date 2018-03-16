@@ -77,22 +77,26 @@ private:
 	Model* model_obj;
 	mat4 local_rbt;
 	mat4 init_rbt;
-	std::vector<mat4>* local_g_model_rbts;
-	std::vector<Model>* local_g_models;
+    vec3 r_vec;
 	float rotation_speed;
 public:
-	void ModelTree::SetLeftChild(ModelTree* child);
-	void ModelTree::SetRightChild(ModelTree* child);
-	void ModelTree::Rotate(void);
-	void ModelTree::RotateChild(void);
-	void ModelTree::SetRotationSpeed(float speed);
-	ModelTree(Model* a_model, ModelTree* parent_ptr) {
+	void SetLeftChild(ModelTree* child);
+	void SetRightChild(ModelTree* child);
+	void Rotate(void);
+	void RotateChild(void);
+	void SetRotationSpeed(float speed);
+    
+    void SetRotationVector(vec3 rvec);
+    
+	ModelTree(Model* a_model, ModelTree* parent_ptr,mat4* global_rbt) {
 		parent = parent_ptr;
 		model_obj = a_model;
-		rotation_speed = 0.1f;
+		rotation_speed = 1.5f;
 		init_rbt = *(a_model->GetRBT());
+        local_rbt = init_rbt;
 		left_child = NULL;
 		right_child = NULL;
+        r_vec = vec3(0.0f,1.0f,0.0f);
 	}
 
 };

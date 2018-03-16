@@ -214,7 +214,7 @@ void InitDataSphere(Model &a_model, vec3 a_color,float radius)
 				a = total_point - 2; //north pole
 				b = total_point - 1; //south pole
 
-				for (int vts = 0; vts <= n2; vts++) {
+				for (int vts = 0; vts < n2; vts++) {
 					c = (vps + 1)*(1 + n2) + vts;
 					d = (vps + 1)*(1 + n2) + vts + 1;
 					Tri(a_model, c, b, d, a_color, positions);

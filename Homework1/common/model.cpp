@@ -33,33 +33,29 @@ void ModelTree::SetRightChild(ModelTree* child) {
 	right_child = child;
 }
 void ModelTree::Rotate(void) {
-	mat4 m_rbt = *(model_obj->GetRBT());
-	local_rbt = rotate(m_rbt, rotation_speed, vec3(0.0f, 1.0f, 0.0f));
+    mat4 L,T;
+	mat4 m_rbt = (local_rbt);
+    local_rbt = inverse(init_rbt)*local_rbt;
+    init_rbt = init_rbt*rotate(mat4(1.0f), rotation_speed, r_vec);
+    local_rbt = init_rbt*local_rbt;
 	(*model_obj).SetModelRbt(&local_rbt);
 	//printf("or here?");
 	RotateChild();
 }
 void ModelTree::RotateChild(void) {
-	mat4 m_rbt,L,T;
+	mat4 m_rbt;
 	if (left_child != NULL) {
-		//printf("here comes!");
-		m_rbt = (left_child->init_rbt);
-		L = get_linear(m_rbt);
-		T = get_translation(m_rbt);
-		//(left_child->local_rbt) = local_rbt*T*L;
-		//(*left_child->model_obj).SetModelRbt(&(left_child->local_rbt));
-		//printf("here?");
+		
+        (left_child->local_rbt) = local_rbt*(left_child->init_rbt);
+		(*(left_child->model_obj)).SetModelRbt(&(left_child->local_rbt));
 		left_child->RotateChild();
 	}
 
 	if (right_child != NULL) {
 		//printf("here too");
-		m_rbt = (right_child->init_rbt);
-		L = get_linear(m_rbt);
-		T = get_translation(m_rbt);
-		(right_child->local_rbt) = local_rbt*T*L;
-		(*right_child->model_obj).SetModelRbt(&(right_child->local_rbt));
-		right_child->RotateChild();
+        (right_child->local_rbt) = local_rbt*(right_child->init_rbt);
+        (*(right_child->model_obj)).SetModelRbt(&(right_child->local_rbt));
+        right_child->RotateChild();
 	}
 }
 
@@ -67,6 +63,7 @@ void ModelTree::SetRotationSpeed(float speed) {
 	rotation_speed = speed;
 
 }
+
 
 
 Model::Model()

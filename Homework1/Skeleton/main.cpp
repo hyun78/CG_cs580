@@ -212,74 +212,61 @@ int main( void )
 
 	// initialize directional light
 	vec3 dir_light = vec3(0.0f, -1.0f, 1.0f);
+    float top_y = 0.0f;
+	float second_y = -1.4f; // height of one model
 
-	float second_y = -1.5f; // height of one model
-
-	Model another_cube = Model();
-	InitDataCube(another_cube, vec3(1.0f, 0.0f, 0.0f));
-	another_cube.InitializeGLSL(DRAW_TYPE::ARRAY, "VertexShader.glsl", "FragmentShader.glsl");
-	another_cube.SetProjection(&g_projection);
-	another_cube.SetEyeRbt(&g_eye_rbt);
-
-	mat4 another_cube_rbt = translate(g_world_rbt, vec3(0.0f, 0.0f, 0.0f));
-	g_model_rbts.push_back(another_cube_rbt);
-	another_cube.SetModelRbt(&another_cube_rbt);
-	another_cube.SetDirectionalLight(dir_light);
-	g_models.push_back(another_cube);
-	ModelTree roots = ModelTree(&another_cube, NULL);
-
+    // cube
+    vec3 cube_color =vec3(1.0f, 0.0f, 0.0f);
 	Model cube = Model();
-	//InitDataCube(cube, vec3(0.0f, 1.0f, 0.0f)); // real cube
-	//InitDataSphere(cube, vec3(0.0f, 1.0f, 0.0f),0.5f); // sphere
-	InitDataPyramid(cube, vec3(0.0f, 0.0f, 1.0f));
+	InitDataCube(cube, cube_color);
 	cube.InitializeGLSL(DRAW_TYPE::ARRAY, "VertexShader.glsl", "FragmentShader.glsl");
 	cube.SetProjection(&g_projection);
 	cube.SetEyeRbt(&g_eye_rbt);
 
-	mat4 cube_rbt = translate(g_world_rbt, vec3(-1.0f, second_y, 0.0f));
-	mat4 rotated_rbt = cube_rbt;
-	
-	g_model_rbts.push_back(rotated_rbt);
-	
-	cube.SetModelRbt(&rotated_rbt);
+	mat4 cube_rbt = translate(g_world_rbt, vec3(0.0f, 0.0f, 0.0f));
+	//g_model_rbts.push_back(cube_rbt);
+	cube.SetModelRbt(&cube_rbt);
 	cube.SetDirectionalLight(dir_light);
+	//g_models.push_back(cube);
+	ModelTree roots = ModelTree(&cube, NULL,&g_world_rbt);
 
-	g_models.push_back(cube);
-	
-	
-	Model my_sphere = Model();
+	Model pyramid = Model();
+	//InitDataCube(cube, vec3(0.0f, 1.0f, 0.0f)); // real cube
+	//InitDataSphere(cube, vec3(0.0f, 1.0f, 0.0f),0.5f); // sphere
+	InitDataPyramid(pyramid, vec3(0.0f, 0.0f, 1.0f));
+	pyramid.InitializeGLSL(DRAW_TYPE::ARRAY, "VertexShader.glsl", "FragmentShader.glsl");
+	pyramid.SetProjection(&g_projection);
+	pyramid.SetEyeRbt(&g_eye_rbt);
+	mat4 pyramid_rbt = translate(g_world_rbt, vec3(-1.0f, second_y, 0.0f));
+	//mat4 rotated_rbt = pyramid_rbt;
+	pyramid.SetModelRbt(&pyramid_rbt);
+	pyramid.SetDirectionalLight(dir_light);
+    
+
+	Model sphere = Model();
 	//InitDataSphere(my_sphere, vec3(1.0f, 0.0f, 0.0f),1.0f);
-	InitDataPyramid(my_sphere, vec3(0.0f, 0.0f, 1.0f));
-	my_sphere.InitializeGLSL(DRAW_TYPE::ARRAY, "VertexShader.glsl", "FragmentShader.glsl");
-	my_sphere.SetProjection(&g_projection);
-	my_sphere.SetEyeRbt(&g_eye_rbt);
+	InitDataSphere(sphere, vec3(0.0f, 0.0f, 1.0f),0.8f);
+	sphere.InitializeGLSL(DRAW_TYPE::ARRAY, "VertexShader.glsl", "FragmentShader.glsl");
+	sphere.SetProjection(&g_projection);
+	sphere.SetEyeRbt(&g_eye_rbt);
 
-	mat4 my_sphere_rbt = translate(g_world_rbt, vec3(1.0f, second_y, 0.0f));
-	g_model_rbts.push_back(my_sphere_rbt);
+	mat4 sphere_rbt = translate(g_world_rbt, vec3(1.0f, second_y, 0.0f));
+	//g_model_rbts.push_back(my_sphere_rbt);
+	sphere.SetModelRbt(&sphere_rbt);
+	sphere.SetDirectionalLight(dir_light);
+	//g_models.push_back(my_sphere);
 	
-	my_sphere.SetModelRbt(&my_sphere_rbt);
-	my_sphere.SetDirectionalLight(dir_light);
-	g_models.push_back(my_sphere);
-	//printf("here ok");
-	//Model my_line = Model();
-	//vec3 start = vec3(0.0f, 0.0f, 0.0f);
-	//vec3 end = vec3(10.0f, 10.0f, 10.0f);
-	//InitDataLine(my_line, start,end,vec3(1.0f,1.0f,0.0f));
-	//my_line.InitializeGLSL(DRAW_TYPE::LINE, "VertexShader.glsl", "FragmentShader.glsl");
-	//my_line.SetProjection(&g_projection);
-	//my_line.SetEyeRbt(&g_eye_rbt);
-	//mat4 my_line_rbt = translate(g_world_rbt, vec3(1.5f, 0.0f, 0.0f));
-	//g_model_rbts.push_back(my_line_rbt);
-	//my_line.SetModelRbt(&my_line_rbt);
-	//my_line.SetDirectionalLight(dir_light);
-	//g_models.push_back(my_line);
-	
-	ModelTree leftchild = ModelTree(&cube, &roots);
+	ModelTree leftchild = ModelTree(&pyramid, &roots,&g_world_rbt);
 	roots.SetLeftChild(&leftchild);
-	ModelTree rightchild = ModelTree(&my_sphere, &roots);
+	ModelTree rightchild = ModelTree(&sphere, &roots,&g_world_rbt);
 	roots.SetRightChild(&rightchild);
-	rightchild.SetRotationSpeed(1.0f);
+    roots.SetRotationSpeed(2.0f);
+	rightchild.SetRotationSpeed(0.5f);
 	//ModelTree roots = ModelTree(&another_cube, NULL, &g_model_rbts, &g_models);
+    
+    
+    
+    
 	float step = 0;
 	do{
 		// Clear the screen	
@@ -296,26 +283,31 @@ int main( void )
 
 		g_models.push_back(cube);
 */
+        
+        //leftchild.Rotate();
 		roots.Rotate();
-		leftchild.Rotate();
-		rightchild.Rotate();
+		
+		//rightchild.Rotate();
 		//child1.Rotate();
+        leftchild.Rotate();
+        rightchild.Rotate();
 		cube.Draw();
-		another_cube.Draw();
-		if (step<3.0){
+		pyramid.Draw();
+		if (step<90.0){
 			//my_sphere_rbt = translate(my_sphere_rbt, vec3(1.0f, 0.0f, 0.0f));
 			step++;
+            
 		}
-		else if (step<6.0){
+		else if (step<200.0){
 			//my_sphere_rbt = translate(my_sphere_rbt, vec3(-1.0f, 0.0f, 0.0f));
-			step++;
+			
 		}
 		else {
 			step = 0;
 		}
 		//my_sphere.SetModelRbt(&my_sphere_rbt);
 
-		my_sphere.Draw();
+		sphere.Draw();
 		
 		//my_line.Draw();
 		// Swap buffers
