@@ -4,9 +4,10 @@
 #include "model.hpp"
 #include "shader.hpp"
 #include "affine.hpp"
-
+//#include <common/geometry.hpp>
 using namespace std;
 using namespace glm;
+
 //
 //class ModelTree{
 //	private:
@@ -26,44 +27,6 @@ using namespace glm;
 //	}
 //		
 //};
-void ModelTree::SetLeftChild(ModelTree* child) {
-	left_child = child;
-}
-void ModelTree::SetRightChild(ModelTree* child) {
-	right_child = child;
-}
-void ModelTree::Rotate(void) {
-    mat4 L,T;
-	mat4 m_rbt = (local_rbt);
-    local_rbt = inverse(init_rbt)*local_rbt;
-    init_rbt = init_rbt*rotate(mat4(1.0f), rotation_speed, r_vec);
-    local_rbt = init_rbt*local_rbt;
-	(*model_obj).SetModelRbt(&local_rbt);
-	//printf("or here?");
-	RotateChild();
-}
-void ModelTree::RotateChild(void) {
-	mat4 m_rbt;
-	if (left_child != NULL) {
-		
-        (left_child->local_rbt) = local_rbt*(left_child->init_rbt);
-		(*(left_child->model_obj)).SetModelRbt(&(left_child->local_rbt));
-		left_child->RotateChild();
-	}
-
-	if (right_child != NULL) {
-		//printf("here too");
-        (right_child->local_rbt) = local_rbt*(right_child->init_rbt);
-        (*(right_child->model_obj)).SetModelRbt(&(right_child->local_rbt));
-        right_child->RotateChild();
-	}
-}
-
-void ModelTree::SetRotationSpeed(float speed) {
-	rotation_speed = speed;
-
-}
-
 
 
 Model::Model()
@@ -171,29 +134,51 @@ void Model::Draw()
 	glUniformMatrix4fv(projection_id, 1, GL_FALSE, &(*(m_projection))[0][0]);
 	glUniformMatrix4fv(eye_id, 1, GL_FALSE, &(*(m_eye_rbt))[0][0]);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, &(*(m_model_rbt))[0][0]);
-
+    
+    if (m_draw_type==DRAW_TYPE::ARRAY){
 	glBindVertexArray(m_vertex_array_id);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_position_buffer_id);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+	
 
+    
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, m_normal_buffer_id);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
 
-	glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, m_color_buffer_id);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
-	
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+        
+    }
+    else if (m_draw_type==DRAW_TYPE::LINE){
+        glBindVertexArray(m_vertex_array_id);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, m_position_buffer_id);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+        
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, m_normal_buffer_id);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, m_color_buffer_id);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), ((GLvoid*)(0)));
+    }
 	if (m_draw_type == DRAW_TYPE::ARRAY)
 	{
 		
 		glDrawArrays(GL_TRIANGLES, 0, (GLsizei) m_positions.size());
+        
 
 	}
 	else if (m_draw_type== DRAW_TYPE::LINE){
 		
-		glDrawArrays(GL_LINE, 0, (GLsizei)m_positions.size());
+        //glEnable(GL_LINE_SMOOTH);
+        //glDrawArrays(GL_LINES, 0, (GLsizei) m_positions.size());
+        glLineWidth(2.0f);
+        glDrawArrays(GL_LINES,0,(GLsizei)m_positions.size());
+        //printf("am I called? %d \n",(int)m_positions.size());
 	}
 	else {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer_id);

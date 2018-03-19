@@ -5,7 +5,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+//#include <glm/ext.hpp>
+//#include <common/geometry.hpp>
 using namespace std;
 using namespace glm;
 
@@ -14,7 +15,11 @@ enum DRAW_TYPE {
 	INDEX,
 	LINE
 };
-
+enum MODEL_TYPE {
+    CUBE,
+    SPHERE,
+    PYRAMID
+};
 class Model {
 	vector<vec3> m_positions;
 	vector<unsigned int> m_indices;
@@ -69,35 +74,7 @@ public:
 	//get model's current RBT
 	mat4* GetRBT(void);
 };
-class ModelTree {
-private:
-	ModelTree* parent; // if parent is null , then it is root
-	ModelTree* left_child;
-	ModelTree* right_child;
-	Model* model_obj;
-	mat4 local_rbt;
-	mat4 init_rbt;
-    vec3 r_vec;
-	float rotation_speed;
-public:
-	void SetLeftChild(ModelTree* child);
-	void SetRightChild(ModelTree* child);
-	void Rotate(void);
-	void RotateChild(void);
-	void SetRotationSpeed(float speed);
-    
-    void SetRotationVector(vec3 rvec);
-    
-	ModelTree(Model* a_model, ModelTree* parent_ptr,mat4* global_rbt) {
-		parent = parent_ptr;
-		model_obj = a_model;
-		rotation_speed = 1.5f;
-		init_rbt = *(a_model->GetRBT());
-        local_rbt = init_rbt;
-		left_child = NULL;
-		right_child = NULL;
-        r_vec = vec3(0.0f,1.0f,0.0f);
-	}
 
-};
+
+
 #endif

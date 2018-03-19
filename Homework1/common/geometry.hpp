@@ -274,8 +274,37 @@ void InitDataPyramid(Model &a_model, vec3 a_color) {
 void InitDataLine(Model &a_model, vec3 start, vec3 end, vec3 a_color)
 {
 
-	a_model.AddPosition(start);
-	a_model.AddPosition(end);
+    
+	a_model.AddPosition(vertices[0]);
+	a_model.AddPosition(vertices[1]);
+    //a_model.AddPosition(vertices[2]);
+    a_model.AddNormal(0.0f, 1.0f, 1.0f);
+    a_model.AddNormal(0.0f, 1.0f, 1.0f);
+    
+    
+    //ComputeNormal(a_model,start,end,end);
+    
+    //a_model.AddColor(a_color);
+ //   a_model.AddColor(a_color);
 	a_model.AddColor(a_color);
-	a_model.AddColor(a_color);
+    a_model.AddColor(a_color);
 }
+void Circle(Model &a_model, vec3 center, vec3 normal, vec3 a_color,float radius){
+    
+    int i;
+    float deg = My_PI / 360.0;
+    float theta;
+    for (i=0;i<360;i++){
+        theta = i*deg;
+        a_model.AddPosition(vec3(cos(theta)*radius,sin(theta)*radius,0.0f));
+        //ComputeNormal(a_model, );
+        a_model.AddColor(a_color);
+    }
+    
+}
+void InitDataCircle(Model &a_model, vec3 center, vec3 normal, vec3 a_color,float radius){
+    Circle(a_model,center,normal,a_color,radius);
+}
+
+
+
